@@ -1,0 +1,66 @@
+{
+  "name": "web-component-project",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build --mode production --target wc --name instagram-widget ./src/components/InstagramWidget.vue && npm run postbuild",
+    "build:local": "vue-cli-service build --mode developement --target wc --name instagram-widget ./src/components/InstagramWidget.vue",
+    "lint": "vue-cli-service lint",
+    "compile:sass": "node-sass ./src/assets/scss/review-form.scss ./src/assets/css/review-form.css -w",
+    "postbuild": "echo 'Build process completed successfully!' && echo 'Please remember to update your .env variables!''"
+  },
+  "dependencies": {
+    "axios": "^1.4.0",
+    "bootstrap": "^5.3.0",
+    "bootstrap-vue": "^2.23.1",
+    "canvas2image": "^1.0.5",
+    "country-to-iso": "^1.3.0",
+    "dotenv": "^16.1.3",
+    "module": "^1.2.5",
+    "qrcode.vue": "^1.7.0",
+    "readline": "^1.3.0",
+    "sass": "^1.62.1",
+    "v-mask": "^2.3.0",
+    "vue": "^2.7.14",
+    "vue-google-autocomplete": "^1.1.4",
+    "vue-script2": "^2.1.0",
+    "vue-tel-input": "^5.15.0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "^3.12.1",
+    "@vue/cli-plugin-eslint": "^3.12.1",
+    "@vue/cli-service": "^3.12.1",
+    "babel-eslint": "^10.1.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^5.16.0",
+    "eslint-plugin-vue": "^5.2.3",
+    "node-sass": "^7.0.3",
+    "sass-loader": "^10.4.1",
+    "vue-template-compiler": "^2.7.14"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "rules": {},
+    "parserOptions": {
+      "parser": "babel-eslint"
+    }
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
+}
