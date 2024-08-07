@@ -13,6 +13,7 @@ import { BModal } from 'bootstrap-vue';
 // Register the component globally
 Vue.component('b-spinner', BSpinner);
 Vue.component('b-modal', BModal);
+Vue.component('instagram-widget', InstagramWidget);
 
 Vue.config.productionTip = false;
 
