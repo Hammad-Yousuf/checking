@@ -309,13 +309,12 @@
 
 <script>
 import axios from 'axios';
-import {Swiper, SwiperSlide} from 'swiper/swiper-vue.mjs';
+import { Swiper, SwiperSlide } from 'swiper/swiper-vue.mjs';
 import 'swiper/swiper-bundle.css';
-import {BSpinner} from 'bootstrap-vue';
-axios.defaults.baseURL = (process.env.NODE_ENV === 'production' ? window.location.origin.includes('staging.') ? 'http://127.0.0.1:8000/' : 'http://127.0.0.1:8000/' : 'http://127.0.0.1:8000/') + 'api/v1';
+import { BSpinner } from 'bootstrap-vue';
 
 export default {
-  name: "InstagramWidget",
+  name: 'InstagramWidget',
   components: {
     BSpinner,
     Swiper,
@@ -339,19 +338,8 @@ export default {
         follows_count: '',
         media_count: '',
       },
-      tokens: {
-        accessToken: '',
-        igID: ''
-      },
-      posts: [{
-        'id': '',
-        'like_count': '',
-        'comments_count': '',
-        'caption': '',
-        'media_url': '',
-      }],
+      posts: [],
       posts_type: 'profile',
-      // widgetId: 8,
       editor: {
         source: {
           username: '',
@@ -393,19 +381,16 @@ export default {
           follow_button_text: '#ffffff',
           load_more_button_bg: '#0081ff',
           load_more_button_text: '#ffffff',
-
         }
       },
       gettingWidget: false,
       additionalPostsToShow: 0,
-      widgets: [],
-      selectedWidget: null,
       showPostModal: false,
     }
   },
 
   mounted() {
-    this.getWidget()
+    this.getWidget();
   },
 
   computed: {
@@ -414,12 +399,9 @@ export default {
     },
     visiblePosts() {
       const maxPosts = (this.editor.layout.columns * this.editor.layout.rows) + this.additionalPostsToShow;
-      const filteredPosts = this.posts.filter(post => post.media_url);
-      return filteredPosts.slice(0, maxPosts);
+      return this.posts.slice(0, maxPosts);
     },
     showLoadMore() {
-      console.log(this.visiblePostCount)
-      console.log(this.posts.length)
       return this.visiblePostCount < this.posts.length;
     }
   },
@@ -427,68 +409,38 @@ export default {
   methods: {
     loadMore() {
       this.additionalPostsToShow += this.editor.layout.columns;
-
-      console.log(this.additionalPostsToShow)
     },
 
     async getWidgetSettings(widgetId) {
       try {
         const response = await axios.post('/get-widget-settings', { widgetId });
-        console.log(response);
-        this.editor = JSON.parse(response.data.widget.widget_settings);
-        console.log(this.editor);
+        this.editor = JSON.parse(response.data.widget_settings);
       } catch (error) {
-        console.error('Error fetching widget settings:', error);
-        this.profileFetchState = 'error';
-        this.profileFetchMessage = 'Error fetching widget settings';
+        this.handleFetchError('Error fetching widget settings');
       }
     },
 
     async getWidget() {
       await this.getWidgetSettings(this.widgetId);
-      console.log("WIDGET");
-      console.log(this.editor);
+      const username = this.editor.source?.username ?? 'elonreevmusk'; // Default username
 
-      const username = this.editor.source?.username ?? 'elonreevmusk'; // Handle nullish values safely
       this.gettingWidget = true;
       this.profileFetchState = 'fetching';
 
-      if (this.editor.source.type === 'username') {
-        try {
-          const response = await axios.post('/get-widget-data', { username });
-          console.log(response.data.businessDetails);
-
-          if (response.data.businessDetails) {
-            this.profile = response.data.businessDetails;
-            this.posts = response.data.businessDetails.media.data;
-            console.log(this.profile);
-            this.profileFetchState = 'success';
-            this.posts_type = 'profile';
-          } else {
-            this.handleFetchError('Invalid Username or You\'re trying to access a private account');
-          }
-        } catch (error) {
-          this.handleFetchError(error);
-        } finally {
-          this.gettingWidget = false;
-        }
-      } else {
-        try {
-          const response = await axios.post('/get-widget-data-keyword', { username });
-          console.log(response.data);
-          this.posts = response.data;
-          this.profileFetchState = 'success';
-          this.posts_type = 'hashtag';
-        } catch (error) {
-          this.handleFetchError(error);
-        } finally {
-          this.gettingWidget = false;
-        }
+      try {
+        const response = await axios.post('/get-widget-data', { username });
+        this.profile = response.data.businessDetails;
+        this.posts = response.data.businessDetails.media.data;
+        this.profileFetchState = 'success';
+        this.posts_type = 'profile';
+      } catch (error) {
+        this.handleFetchError('Error fetching widget data');
+      } finally {
+        this.gettingWidget = false;
       }
     },
 
     handleFetchError(message) {
-      console.error(message);
       this.profileFetchState = 'error';
       this.profileFetchMessage = message;
     },
@@ -498,26 +450,15 @@ export default {
         window.open(post.permalink, '_blank');
       } else {
         this.showPostModal = true;
-        this.$nextTick(() => {
-          setTimeout(() => {
-            const postId = 'post_' + post.id;
-            const postElement = document.getElementById(postId);
-            if (postElement) {
-              postElement.scrollIntoView({behavior: 'smooth'});
-            }
-          }, 300);
-        });
       }
     },
 
     redirectToProfile() {
       if (this.profile && this.profile.username) {
-        // Redirect to user's Instagram profile
         window.open(`https://www.instagram.com/${this.profile.username}`, '_blank');
       }
-    },
-
-  },
+    }
+  }
 }
 </script>
 
