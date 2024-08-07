@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <instagram-widget user-id="1"></instagram-widget>
+    <instagram-widget widget-id="8"></instagram-widget>
   </div>
 </template>
 

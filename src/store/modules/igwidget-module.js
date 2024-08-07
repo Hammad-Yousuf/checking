@@ -6,22 +6,6 @@ const state = {
     customers: []
 };
 
-const getters = {
-    all: (state) => state.widgets,
-    widget: (state) => state.widget,
-    allCustomers: (state) => state.customers,
-    customersWithoutWidgets: (state, getters) => {
-        // Get all widgets and customers
-        const widgets = getters.all;
-        const customers = getters.allCustomers;
-
-        // Extract business IDs from widgets
-        const widgetBusinessIds = new Set(widgets.map(widget => widget.business_id));
-
-        // Filter customers who do not have a widget
-        return customers.filter(customer => !widgetBusinessIds.has(customer.id));
-    }
-};
 
 const actions = {
     getIgWidget({ commit }, data) {
@@ -29,7 +13,6 @@ const actions = {
             axios
                 .post('/get-widget-data', data)
                 .then((res) => {
-                    commit('SET_WIDGET', res.data);
                     resolve(res.data);
                 })
                 .catch((error) => {
@@ -42,7 +25,7 @@ const actions = {
             axios
                 .post('/get-widget-settings', data)
                 .then((res) => {
-                    resolve(res.data);
+                    resolve(res.data.widget);
                 })
                 .catch((error) => {
                     reject(error);
@@ -51,14 +34,9 @@ const actions = {
     }
 };
 
-const mutations = {
-
-};
 
 export default {
     namespaced: true,
     state,
-    getters,
     actions,
-    mutations,
 };

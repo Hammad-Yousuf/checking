@@ -3,19 +3,22 @@ import wrap from '@vue/web-component-wrapper';
 import InstagramWidget from './components/InstagramWidget';
 import VS2 from 'vue-script2';
 import App from './App.vue';
-import store from './store';  // Make sure this path is correct
-
+import store from './store';
+import './components/_globals'
 
 // Import individual components from BootstrapVue
 import { BSpinner } from 'bootstrap-vue';
+import { BModal } from 'bootstrap-vue';
 
 // Register the component globally
 Vue.component('b-spinner', BSpinner);
+Vue.component('b-modal', BModal);
 
 Vue.config.productionTip = false;
 
 new Vue({
-    store,  // Provide the store to the Vue instance
+    el: '#app',
+    store,
     render: h => h(App),
 }).$mount('#app');
 Vue.use(VS2);
