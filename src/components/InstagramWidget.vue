@@ -68,88 +68,104 @@
                 gridTemplateColumns: `repeat(${editor.layout.columns}, 1fr)`,
                 gap: editor.layout.padding + 'px',
               }">
-          <div v-for="post in visiblePosts" :key="post.id" class="post image_card" @click="post_action(post)">
-            <div v-if="editor.post_style.post_style === 'image_card' && post.media_url">
+          <div v-for="post in visiblePosts" :key="post.id"  @click="post_action(post)">
+            <div v-if="editor.post_style.post_style === 'image_card' && post.media_url" class="post image_card">
               <div class="media_wrapper">
+                <!-- Media Icon -->
                 <i class="media_icon"
-                   :class="{'uil uil-play': post.media_type === 'VIDEO', 'uil uil-layers': post.media_type == 'CAROUSEL_ALBUM' }"></i>
+                   :class="{
+           'uil uil-play': post.media_type === 'VIDEO',
+           'uil uil-layers': post.media_type == 'CAROUSEL_ALBUM'
+         }"></i>
+
+                <!-- Media Content -->
                 <img v-if="post.media_type === 'IMAGE' && post.media_product_type === 'FEED'" :src="post.media_url"
                      class="post_image" alt="Post image">
-                <img v-else-if="post.media_type === 'IMAGE'" :src="post.media_url" class="post_image"
-                     alt="Post image">
+                <img v-else-if="post.media_type === 'IMAGE'" :src="post.media_url" class="post_image" alt="Post image">
                 <img v-else-if="post.media_type === 'CAROUSEL_ALBUM'" :src="post.media_url" class="post_image"
                      alt="Post image">
 
-                <video v-if="post.media_type === 'VIDEO' && post.media_product_type === 'REELS'"
-                       :src="post.media_url" class="post_image"></video>
+                <video v-if="post.media_type === 'VIDEO' && post.media_product_type === 'REELS'" :src="post.media_url"
+                       class="post_image"></video>
                 <video v-else-if="post.media_type === 'VIDEO'" :src="post.media_url" class="post_image"></video>
               </div>
+
               <div class="post_insights_container">
-                          <span class="d-flex gap-5">
-                            <p class="post_like">
-                              <i class="uil uil-heart-alt"></i>{{ post.like_count }}
-                            </p>
-                            <p class="post_like ml-3">
-                              <i class="uil uil-comment"></i>{{ post.comments_count }}
-                            </p>
-                          </span>
+      <span class="d-flex gap-5">
+        <p class="post_like">
+          <i class="uil uil-heart-alt"></i>{{ post.like_count }}
+        </p>
+        <p class="post_like ml-3">
+          <i class="uil uil-comment"></i>{{ post.comments_count }}
+        </p>
+      </span>
               </div>
             </div>
-            <div v-if="editor.post_style.post_style === 'expanded' && post.media_url"
-                 :key="post.id"
-                 class="post expanded">
+
+            <div v-if="editor.post_style.post_style === 'expanded' && post.media_url" class="post expanded">
               <div class="post_header justify-content-between align-items-center">
                 <div class="d-flex justify-content-start align-items-center">
+                  <!-- Profile Image -->
                   <div v-if="editor.post_style.post_details.profile_image" class="profile_image_container">
                     <img
                         :src="(profile.profile_picture_url) ? profile.profile_picture_url : '/images/widget-layouts/profile.jpg'"
                         :alt="profile.name" class="profile_image">
                   </div>
+
+                  <!-- Username -->
                   <div v-if="editor.post_style.post_details.username" class="post_username_container mx-1">
                     <h3 class="username">{{ profile.username }}</h3>
                   </div>
                 </div>
+
                 <div class="font-size-24 mx-2">
                   <a :href="'https://instagram.com/' + profile.username" target="_blank">
                     <i class="uil uil-instagram instagram_icon"></i>
                   </a>
                 </div>
               </div>
+
               <div class="post_image_container" @click="post_action(post)">
                 <div class="media_wrapper">
+                  <!-- Media Icon -->
                   <i class="media_icon"
-                     :class="{'uil uil-play': post.media_type === 'VIDEO', 'uil uil-layers': post.media_type == 'CAROUSEL_ALBUM' }"></i>
-                  <img v-if="post.media_type === 'IMAGE' && post.media_product_type === 'FEED'"
-                       :src="post.media_url"
+                     :class="{
+             'uil uil-play': post.media_type === 'VIDEO',
+             'uil uil-layers': post.media_type == 'CAROUSEL_ALBUM'
+           }"></i>
+
+                  <!-- Media Content -->
+                  <img v-if="post.media_type === 'IMAGE' && post.media_product_type === 'FEED'" :src="post.media_url"
                        class="post_image" alt="Post image">
                   <img v-else-if="post.media_type === 'IMAGE'" :src="post.media_url" class="post_image"
                        alt="Post image">
                   <img v-else-if="post.media_type === 'CAROUSEL_ALBUM'" :src="post.media_url" class="post_image"
                        alt="Post image">
 
-                  <video v-if="post.media_type === 'VIDEO' && post.media_product_type === 'REELS'"
-                         :src="post.media_url" class="post_image"></video>
+                  <video v-if="post.media_type === 'VIDEO' && post.media_product_type === 'REELS'" :src="post.media_url"
+                         class="post_image"></video>
                   <video v-else-if="post.media_type === 'VIDEO'" :src="post.media_url" class="post_image"></video>
                 </div>
               </div>
+
               <div class="post_footer" @click="post_action(post)">
                 <div class="post_insights_container">
-                    <span class="d-flex gap-5">
-                      <p v-if="editor.post_style.post_details.likes_count" class="post_like">
-                        <i class="uil uil-heart-alt"></i>{{ post.like_count }}
-                      </p>
-                      <p v-if="editor.post_style.post_details.comments_count" class="post_like ml-2">
-                        <i class="uil uil-comment"></i>{{ post.comments_count }}
-                      </p>
-                    </span>
+        <span class="d-flex gap-5">
+          <p v-if="editor.post_style.post_details.likes_count" class="post_like">
+            <i class="uil uil-heart-alt"></i>{{ post.like_count }}
+          </p>
+          <p v-if="editor.post_style.post_details.comments_count" class="post_like ml-2">
+            <i class="uil uil-comment"></i>{{ post.comments_count }}
+          </p>
+        </span>
                 </div>
+
                 <div v-if="editor.post_style.post_details.caption" class="post_caption_container">
                   <p class="caption">{{ post.caption }}</p>
                 </div>
               </div>
             </div>
           </div>
-
         </div>
         <div v-if="showLoadMore" class="load_more_container">
           <button @click="loadMore"
@@ -231,7 +247,7 @@
                         <i class="uil uil-heart-alt"></i>{{ post.like_count }}
                       </p>
                       <p class="post_like ml-2">
-                        <i class="uil uil-comment"></i>{{ post.comments_count }}
+                        <uil-vuejs class="comment"/>{{ post.comments_count }}
                       </p>
                     </span>
                   </div>
@@ -245,7 +261,7 @@
         </div>
 
         <b-modal v-model="showPostModal" :hide-footer="true" title="Posts"
-                 :header-class="{'dark': editor.styles.theme === 'dark'}" size="lG">
+                :header-class="{'dark': editor.styles.theme === 'dark'}" size="lG">
           <div v-for="post in posts" :key="post.id" :id="'post_' + post.id"
                :ref="'post_' + post.id"
                :class="{'dark': editor.styles.theme === 'dark'}"
@@ -308,17 +324,23 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import axios from 'axios';
-import { Swiper, SwiperSlide } from 'swiper/swiper-vue.mjs';
-import 'swiper/swiper-bundle.css';
-import { BSpinner } from 'bootstrap-vue';
+import {UilVuejs} from '@iconscout/vue-unicons'
+import {BSpinner} from 'bootstrap-vue';
+import BootstrapVue from 'bootstrap-vue';
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css';
+
+Vue.use(BootstrapVue);
+axios.defaults.baseURL = (process.env.NODE_ENV === 'production' ? window.location.origin.includes('staging.') ? 'http://127.0.0.1:8000/' : 'http://127.0.0.1:8000/' : 'http://127.0.0.1:8000/') + 'api/v1';
 
 export default {
-  name: 'InstagramWidget',
+  name: "InstagramWidget",
   components: {
     BSpinner,
-    Swiper,
-    SwiperSlide,
+
+    UilVuejs
   },
   props: {
     widgetId: {
@@ -338,8 +360,19 @@ export default {
         follows_count: '',
         media_count: '',
       },
-      posts: [],
+      tokens: {
+        accessToken: '',
+        igID: ''
+      },
+      posts: [{
+        'id': '',
+        'like_count': '',
+        'comments_count': '',
+        'caption': '',
+        'media_url': '',
+      }],
       posts_type: 'profile',
+      // widgetId: 8,
       editor: {
         source: {
           username: '',
@@ -381,16 +414,19 @@ export default {
           follow_button_text: '#ffffff',
           load_more_button_bg: '#0081ff',
           load_more_button_text: '#ffffff',
+
         }
       },
       gettingWidget: false,
       additionalPostsToShow: 0,
+      widgets: [],
+      selectedWidget: null,
       showPostModal: false,
     }
   },
 
   mounted() {
-    this.getWidget();
+    this.getWidget()
   },
 
   computed: {
@@ -399,9 +435,12 @@ export default {
     },
     visiblePosts() {
       const maxPosts = (this.editor.layout.columns * this.editor.layout.rows) + this.additionalPostsToShow;
-      return this.posts.slice(0, maxPosts);
+      const filteredPosts = this.posts.filter(post => post.media_url);
+      return filteredPosts.slice(0, maxPosts);
     },
     showLoadMore() {
+      console.log(this.visiblePostCount)
+      console.log(this.posts.length)
       return this.visiblePostCount < this.posts.length;
     }
   },
@@ -409,38 +448,68 @@ export default {
   methods: {
     loadMore() {
       this.additionalPostsToShow += this.editor.layout.columns;
+
+      console.log(this.additionalPostsToShow)
     },
 
     async getWidgetSettings(widgetId) {
       try {
-        const response = await axios.post('/get-widget-settings', { widgetId });
-        this.editor = JSON.parse(response.data.widget_settings);
+        const response = await axios.post('/get-widget-settings', {widgetId});
+        console.log(response);
+        this.editor = JSON.parse(response.data.widget.widget_settings);
+        console.log(this.editor);
       } catch (error) {
-        this.handleFetchError('Error fetching widget settings');
+        console.error('Error fetching widget settings:', error);
+        this.profileFetchState = 'error';
+        this.profileFetchMessage = 'Error fetching widget settings';
       }
     },
 
     async getWidget() {
       await this.getWidgetSettings(this.widgetId);
-      const username = this.editor.source?.username ?? 'elonreevmusk'; // Default username
+      console.log("WIDGET");
+      console.log(this.editor);
 
+      const username = this.editor.source.username; // Handle nullish values safely
       this.gettingWidget = true;
       this.profileFetchState = 'fetching';
 
-      try {
-        const response = await axios.post('/get-widget-data', { username });
-        this.profile = response.data.businessDetails;
-        this.posts = response.data.businessDetails.media.data;
-        this.profileFetchState = 'success';
-        this.posts_type = 'profile';
-      } catch (error) {
-        this.handleFetchError('Error fetching widget data');
-      } finally {
-        this.gettingWidget = false;
+      if (this.editor.source.type === 'username') {
+        try {
+          const response = await axios.post('/get-widget-data', {username});
+          console.log(response.data.businessDetails);
+
+          if (response.data.businessDetails) {
+            this.profile = response.data.businessDetails;
+            this.posts = response.data.businessDetails.media.data;
+            console.log(this.profile);
+            this.profileFetchState = 'success';
+            this.posts_type = 'profile';
+          } else {
+            this.handleFetchError('Invalid Username or You\'re trying to access a private account');
+          }
+        } catch (error) {
+          this.handleFetchError(error);
+        } finally {
+          this.gettingWidget = false;
+        }
+      } else {
+        try {
+          const response = await axios.post('/get-widget-data-keyword', {username});
+          console.log(response.data);
+          this.posts = response.data;
+          this.profileFetchState = 'success';
+          this.posts_type = 'hashtag';
+        } catch (error) {
+          this.handleFetchError(error);
+        } finally {
+          this.gettingWidget = false;
+        }
       }
     },
 
     handleFetchError(message) {
+      console.error(message);
       this.profileFetchState = 'error';
       this.profileFetchMessage = message;
     },
@@ -450,20 +519,31 @@ export default {
         window.open(post.permalink, '_blank');
       } else {
         this.showPostModal = true;
+        this.$nextTick(() => {
+          setTimeout(() => {
+            const postId = 'post_' + post.id;
+            const postElement = document.getElementById(postId);
+            if (postElement) {
+              postElement.scrollIntoView({behavior: 'smooth'});
+            }
+          }, 300);
+        });
       }
     },
 
     redirectToProfile() {
       if (this.profile && this.profile.username) {
-        window.open(`https://www.instagram.com/${this.profile.username}`, '_blank');
+        // Redirect to user's Instagram profile
+        window.open('https://www.instagram.com/${this.profile.username}', '_blank');
       }
-    }
-  }
+    },
+
+  },
 }
 </script>
 
 <!--WIdget Styles-->
-<style scoped>
+<style>
 
 .fetch_loader {
   width: 100%;
@@ -729,6 +809,9 @@ export default {
     .post_footer {
 
       .post_insights_container {
+        position: relative;
+        background: none;
+
         p {
           margin-block: 0.5rem;
           font-size: 1.2rem;
