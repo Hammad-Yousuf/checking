@@ -433,23 +433,35 @@ export default {
 
     async getWidgetSettings(widgetId) {
       try {
-        const res = await this.$store.dispatch('igwidget/getWidgetSettings', {widgetId});
-        this.editor = JSON.parse(res.widget_settings);
+        const response = await axios.post('/get-widget-settings', { widgetId });
+        console.log(response);
+        this.editor = JSON.parse(response.data.widget.widget_settings);
+        console.log(this.editor);
       } catch (error) {
-        console.error(error);
+        console.error('Error fetching widget settings:', error);
+        this.profileFetchState = 'error';
+        this.profileFetchMessage = 'Error fetching widget settings';
       }
     },
+
     async getWidget() {
       await this.getWidgetSettings(this.widgetId);
+      console.log("WIDGET");
+      console.log(this.editor);
+
       const username = this.editor.source?.username ?? 'elonreevmusk'; // Handle nullish values safely
       this.gettingWidget = true;
       this.profileFetchState = 'fetching';
+
       if (this.editor.source.type === 'username') {
         try {
-          const res = await this.$store.dispatch('igwidget/getIgWidget', {username});
-          if (res.businessDetails) {
-            this.profile = res.businessDetails;
-            this.posts = res.businessDetails.media.data;
+          const response = await axios.post('/get-widget-data', { username });
+          console.log(response.data.businessDetails);
+
+          if (response.data.businessDetails) {
+            this.profile = response.data.businessDetails;
+            this.posts = response.data.businessDetails.media.data;
+            console.log(this.profile);
             this.profileFetchState = 'success';
             this.posts_type = 'profile';
           } else {
@@ -462,8 +474,9 @@ export default {
         }
       } else {
         try {
-          const res = await this.$store.dispatch('igwidget/searchKeyword', {username});
-          this.posts = res;
+          const response = await axios.post('/get-widget-data-keyword', { username });
+          console.log(response.data);
+          this.posts = response.data;
           this.profileFetchState = 'success';
           this.posts_type = 'hashtag';
         } catch (error) {

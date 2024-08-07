@@ -2,8 +2,8 @@ import Vue from 'vue';
 import wrap from '@vue/web-component-wrapper';
 import InstagramWidget from './components/InstagramWidget';
 import VS2 from 'vue-script2';
-import App from './App.vue';
-import store from './store';
+// import App from './App.vue';
+// import store from './store';
 import './components/_globals'
 
 // Import individual components from BootstrapVue
@@ -15,13 +15,13 @@ Vue.component('b-spinner', BSpinner);
 Vue.component('b-modal', BModal);
 Vue.component('instagram-widget', InstagramWidget);
 
-Vue.config.productionTip = false;
+// Vue.config.productionTip = false;
 
-new Vue({
-    el: '#app',
-    store,
-    render: h => h(App),
-}).$mount('#app');
+// new Vue({
+//     el: '#app',
+//     store,
+//     render: h => h(App),
+// }).$mount('#app');
 Vue.use(VS2);
 
 const WrappedElement = wrap(Vue, InstagramWidget);
@@ -36,6 +36,6 @@ fontStyle.textContent = `
 }`;
 document.head.appendChild(fontStyle);
 console.log('Main.js loaded');
-if (!window.customElements.get('instagram-widget')) {
+if (window.customElements.get('instagram-widget') === undefined) {
     window.customElements.define('instagram-widget', WrappedElement);
 }
