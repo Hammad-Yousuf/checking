@@ -6,7 +6,6 @@ import wrap from '@vue/web-component-wrapper';
 import InstagramWidget from './components/InstagramWidget';
 import VS2 from 'vue-script2';
 
-
 Vue.use(BootstrapVue);
 Vue.use(VS2);
 

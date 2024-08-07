@@ -339,7 +339,6 @@ export default {
   name: "InstagramWidget",
   components: {
     BSpinner,
-
     UilVuejs
   },
   props: {

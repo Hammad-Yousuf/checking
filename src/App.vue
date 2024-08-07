@@ -6,7 +6,6 @@
 
 <script>
 import  InstagramWidget from './components/InstagramWidget'
-
 export default {
   name: 'app',
   components: {
