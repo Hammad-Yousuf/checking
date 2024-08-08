@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="editor-content instagram-widget " :class="{'dark': editor.styles.theme === 'dark'}">
+  <div ref="instagramWidgetContainer">
+    <div class="instagram-widget " :class="{'dark': editor.styles.theme === 'dark'}">
       <div v-if="profileFetchState === 'fetching' || profileFetchState === 'error'" class="fetch_loader">
         <b-spinner v-if="profileFetchState === 'fetching'"></b-spinner>
         <h3 v-if="profileFetchState === 'error'" class="error_fetching">{{ profileFetchMessage }}</h3>
@@ -103,17 +103,19 @@
             </div>
 
             <div v-if="editor.post_style.post_style === 'expanded' && post.media_url" class="post expanded">
-              <div class="post_header justify-content-between align-items-center">
-                <div class="d-flex justify-content-start align-items-center">
+              <div class="post_header" style="justify-content: space-between; align-items: center;">
+                <div style="display: flex; justify-content: start; align-items: start;">
                   <!-- Profile Image -->
                   <div v-if="editor.post_style.post_details.profile_image" class="profile_image_container">
-                    <img
-                        :src="(profile.profile_picture_url) ? profile.profile_picture_url : '/images/widget-layouts/profile.jpg'"
-                        :alt="profile.name" class="profile_image">
+                    <a :href="'https://instagram.com/' + profile.username" target="_blank">
+                      <img
+                          :src="(profile.profile_picture_url) ? profile.profile_picture_url : '/images/widget-layouts/profile.jpg'"
+                          :alt="profile.name" class="profile_image">
+                    </a>
                   </div>
 
                   <!-- Username -->
-                  <div v-if="editor.post_style.post_details.username" class="post_username_container mx-1">
+                  <div v-if="editor.post_style.post_details.username" class="post_username_container">
                     <h3 class="username">{{ profile.username }}</h3>
                   </div>
                 </div>
@@ -130,9 +132,9 @@
                   <!-- Media Icon -->
                   <i class="media_icon"
                      :class="{
-             'uil uil-play': post.media_type === 'VIDEO',
-             'uil uil-layers': post.media_type == 'CAROUSEL_ALBUM'
-           }"></i>
+                       'uil uil-play': post.media_type === 'VIDEO',
+                       'uil uil-layers': post.media_type == 'CAROUSEL_ALBUM'
+                     }"></i>
 
                   <!-- Media Content -->
                   <img v-if="post.media_type === 'IMAGE' && post.media_product_type === 'FEED'" :src="post.media_url"
@@ -150,14 +152,14 @@
 
               <div class="post_footer" @click="post_action(post)">
                 <div class="post_insights_container">
-        <span class="d-flex gap-5">
-          <p v-if="editor.post_style.post_details.likes_count" class="post_like">
-            <i class="uil uil-heart-alt"></i>{{ post.like_count }}
-          </p>
-          <p v-if="editor.post_style.post_details.comments_count" class="post_like ml-2">
-            <i class="uil uil-comment"></i>{{ post.comments_count }}
-          </p>
-        </span>
+                  <span class="d-flex gap-5" style="display: flex; gap: 1rem;">
+                    <p v-if="editor.post_style.post_details.likes_count" class="post_like">
+                      <i class="uil uil-heart-alt"></i>{{ post.like_count }}
+                    </p>
+                    <p v-if="editor.post_style.post_details.comments_count" class="post_like ml-2" style="margin-left: .5rem;">
+                      <i class="uil uil-comment"></i>{{ post.comments_count }}
+                    </p>
+                  </span>
                 </div>
 
                 <div v-if="editor.post_style.post_details.caption" class="post_caption_container">
@@ -273,9 +275,11 @@
                   <div class="post_header_left d-flex align-items-center">
                     <div class="profile_image_container">
 
-                      <img
-                          :src="(profile.profile_picture_url) ? profile.profile_picture_url : '/images/widget-layouts/profile.jpg'"
-                          :alt="profile.name" class="profile_image" @click="redirectToProfile">
+                      <a :href="'https://instagram.com/' + profile.username" target="_blank">
+                        <img
+                            :src="(profile.profile_picture_url) ? profile.profile_picture_url : '/images/widget-layouts/profile.jpg'"
+                            :alt="profile.name" class="profile_image">
+                      </a>
                     </div>
                     <div class="post_username_container ml-2">
                       <h3 class="username" @click="redirectToProfile">{{ profile.username }}</h3>
@@ -426,6 +430,7 @@ export default {
 
   mounted() {
     this.getWidget()
+    this.createShadowDom()
   },
 
   computed: {
@@ -445,6 +450,278 @@ export default {
   },
 
   methods: {
+    createShadowDom() {
+      const container = this.$refs.instagramWidgetContainer;
+      if (!container) {
+        console.error('InstagramWidget container not found.');
+        return;
+      }
+
+      const shadowRoot = container.attachShadow({ mode: 'open' });
+
+      const style = document.createElement('style');
+      style.textContent = `
+        .fetch_loader {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+          }
+
+          .layouts_wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+          }
+
+          .instagram-widget {
+            max-height: 93vh;
+            overflow-y: scroll;
+
+            .profile_details_container {
+              padding: 2rem 1rem;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 3rem;
+
+              .profile_details_left {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+              }
+
+              .profile_picture_container {
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+              }
+
+              .profile_picture {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 50%;
+              }
+
+              .profile_names_container {
+                justify-self: flex-start;
+
+                .name {
+                  margin-bottom: .2rem;
+                  color: #222
+                }
+
+                .username {
+                  font-size: 16px;
+                  font-weight: 400;
+                  margin-block: 0;
+                  color: #555;
+                }
+
+                .username::before {
+                  content: '@';
+                }
+              }
+
+
+              .follow_button {
+                background: #007FFF;
+                color: #fff;
+                padding: .5rem 1rem;
+                border-radius: 4px;
+                border: none;
+              }
+
+              .profile_insights_container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                .insight_count_tag {
+                //display: inline-block; margin-inline: .5rem; font-size: 18px; margin-bottom: 0; color: #555; line-height: 1; text-transform: capitalize;
+
+                  strong {
+                    display: block;
+                    text-align: center;
+                    color: #222;
+                    font-size: 22px;
+                    margin-bottom: .2rem;
+                  }
+                }
+              }
+
+            }
+
+            .posts_container {
+              padding: 1rem 2rem;
+            }
+
+            .grid_layout_posts_container {
+
+              display: grid;
+            //grid-template-columns: repeat( , 1fr); justify-content: center; gap: .5rem;
+            }
+
+            .post {
+              cursor: pointer;
+            }
+
+            .media_wrapper {
+              width: 100%;
+              height: 100%;
+              aspect-ratio: 1;
+              position: relative;
+              background: #0a0a0a;
+
+              .media_icon {
+                position: absolute;
+                right: 1rem;
+                top: 1rem;
+                color: #fff;
+                font-size: 2rem;
+                font-weight: 700;
+              }
+            }
+
+            .post.image_card:hover .post_insights_container {
+              display: grid;
+              place-items: center;
+            }
+
+            .post.image_card {
+              width: 100%;
+              position: relative;
+
+              img.post_image {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+              }
+
+              video.post_image {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+              }
+
+              .post_insights_container {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                background: rgba(0, 0, 0, 0.5);
+                display: none;
+
+                .post_like {
+                  font-size: 1.5rem;
+                  color: #fff
+                }
+              }
+            }
+
+            .post.expanded {
+              width: 100%;
+              overflow: hidden;
+
+              .post_header {
+                display: flex;
+                gap: .3rem;
+                margin-bottom: .5rem;
+
+                .profile_image {
+                  width: 50px;
+                  border-radius: 50%;
+                }
+
+                .username {
+                  font-size: .9rem;
+                  font-weight: 700;
+                  color: #111;
+                }
+              }
+
+              .post_image_container {
+                width: 100%;
+
+                .media_wrapper {
+                  width: 100%;
+                  height: 100%;
+                  aspect-ratio: 1;
+                  position: relative;
+
+                  img.post_image {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                  }
+
+                  video.post_image {
+                    width: 100%;
+                    height: 100%;
+                  }
+                }
+              }
+
+              .post_footer {
+
+                .post_insights_container {
+                  position: relative;
+                  background: none;
+
+                  p {
+                    margin-block: 0.5rem;
+                    font-size: 1.2rem;
+                    color: #111;
+                  }
+                }
+
+                .post_caption_container {
+                  .caption {
+                    color: #111;
+                    overflow: hidden;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 3;
+                    line-clamp: 3;
+                    -webkit-box-orient: vertical;
+                  }
+                }
+
+              }
+
+            }
+
+            .load_more_container {
+              width: 100%;
+              margin-top: 2rem;
+              margin-bottom: 2rem;
+              text-align: center;
+
+              .load_more_button {
+                background: #007FFF;
+                color: #fff;
+                padding: .5rem 1rem;
+                border-radius: 4px;
+                border: none;
+                margin-inline: auto;
+                margin-block: .5rem;
+                font-size: 1.1rem;
+
+              }
+            }
+
+          }
+      `;
+      shadowRoot.appendChild(style);
+
+      // Move the existing HTML content into the shadow root
+      while (container.firstChild) {
+        shadowRoot.appendChild(container.firstChild);
+      }
+    },
     loadMore() {
       this.additionalPostsToShow += this.editor.layout.columns;
 
@@ -542,7 +819,7 @@ export default {
 </script>
 
 <!--WIdget Styles-->
-<style>
+<style scoped>
 
 .fetch_loader {
   width: 100%;
@@ -553,66 +830,10 @@ export default {
   align-items: center;
 }
 
-.customer_select {
-  border: 1px solid #8a8a8a;
-  border-radius: 4px;
-  color: #000;
-
-  * {
-    color: #000;
-  }
-}
-
-.source_input {
-  width: 100%;
-  padding: .5rem;
-  border-radius: 4px;
-  border: 2px solid #456db9;
-  font-size: 1.1rem;
-}
-
-.source_button {
-  height: 100%;
-  background: #284273;
-  color: #fff;
-  border: none;
-  padding: .5rem;
-  font-size: 1.1rem;
-}
-
-.v-select {
-  cursor: pointer !important;
-
-  * {
-    cursor: pointer !important;
-  }
-}
-
 .layouts_wrapper {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-}
-
-.layout-item {
-
-  .btn {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: fit-content;
-
-    img {
-      display: inline-block;
-      width: 5rem;
-    }
-
-    label {
-      display: inline-block;
-      font-size: 12px;
-    }
-  }
-
 }
 
 .instagram-widget {
@@ -1003,7 +1224,6 @@ li:has( .profile_details) {
   }
 }
 
-
 .modal-header.dark {
   background: #1b1b1b !important;
 
@@ -1020,4 +1240,6 @@ li:has( .profile_details) {
     color: #fff !important
   }
 }
+
 </style>
+
