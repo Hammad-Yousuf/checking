@@ -818,7 +818,6 @@ export default {
 }
 </script>
 
-<!--WIdget Styles-->
 <style scoped>
 
 .fetch_loader {
@@ -1242,4 +1241,3 @@ li:has( .profile_details) {
 }
 
 </style>
-
